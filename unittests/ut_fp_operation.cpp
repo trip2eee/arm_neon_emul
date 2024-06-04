@@ -2,7 +2,7 @@
 #include <cmath>
 #include "../neon_emul/fp_operation.h"
 
-using namespace FPOP;
+using namespace FP32;
 
 #define EXPECT_EQ(x, y) __test_equal(__FILE__, __LINE__, x, y);
 #define EXPECT_FLOAT_EQ(x, y) __test_float_equal(__FILE__, __LINE__, x, y);
@@ -11,12 +11,12 @@ bool __test_equal(const char* const file, const int line, const float64_t x, con
 {
     bool bEqual;
     const float32_t err = x - y;
-    if(abs(err) <= 0.0)
-    {
+    if(fabs(err) <= 0.0) {
         bEqual = true;        
     } else {
         bEqual = false;
-        printf("%s:%d - FAIL!\n", file, line);
+        printf("\n%s:%d - FAIL!\n", file, line);
+        printf("%f != %f\n\n", x, y);
     }
     return bEqual;
 }
@@ -25,12 +25,12 @@ bool __test_float_equal(const char* const file, const int line, const float64_t 
 {
     bool bEqual;
     const float32_t err = x - y;
-    if(abs(err) <= eps)
-    {
-        bEqual = true;        
+    if(fabs(err) <= eps) {
+        bEqual = true;
     } else {
         bEqual = false;
-        printf("%s:%d - FAIL!\n", file, line);
+        printf("\n%s:%d - FAIL!\n", file, line);
+        printf("%f != %f\n\n", x, y);
     }
     return bEqual;
 }
@@ -41,8 +41,8 @@ void test_conversion()
     float32_t f32A = 10.25F;
     float32_t f32B = -1.12345F;
 
-    FPOP::FP32_t stA = FPOP::float32_to_fp32(f32A);
-    FPOP::FP32_t stB = FPOP::float32_to_fp32(f32B);
+    FP32::FP32_t stA = FP32::float32_to_fp32(f32A);
+    FP32::FP32_t stB = FP32::float32_to_fp32(f32B);
 
     printf("sizeof float32_t: %d\n", sizeof(stA));
 
@@ -153,9 +153,43 @@ void test_add5()
     EXPECT_FLOAT_EQ(f32A + f32B, f32C);
 }
 
+
+void test_add6()
+{
+    printf("test_add6\n");
+    float32_t f32A = 3.14159265F;
+    float32_t f32B = 1000.0F;
+
+    FP32_t stA = float32_to_fp32(f32A);
+    FP32_t stB = float32_to_fp32(f32B);
+    FP32_t stC = add_fp32(stA, stB);
+    
+    float32_t f32C = fp32_to_float32(stC);
+    printf("%f + %f = %f\n", f32A, f32B, f32C);
+
+    EXPECT_FLOAT_EQ(f32A + f32B, f32C);
+}
+
+void test_add7()
+{
+    printf("test_add7\n");
+    float32_t f32A = 3.14159265F;
+    float32_t f32B = 1000000.0F;
+
+    FP32_t stA = float32_to_fp32(f32A);
+    FP32_t stB = float32_to_fp32(f32B);
+    FP32_t stC = add_fp32(stA, stB);
+    
+    float32_t f32C = fp32_to_float32(stC);
+    printf("%f + %f = %f\n", f32A, f32B, f32C);
+
+    EXPECT_FLOAT_EQ(f32A + f32B, f32C);
+}
+
+
 void test_sub()
 {
-    printf("test_add5\n");
+    printf("test_sub\n");
     float32_t f32A = 10.0F;
     float32_t f32B = 5.0F;
 
@@ -164,9 +198,26 @@ void test_sub()
     FP32_t stC = sub_fp32(stA, stB);
     
     float32_t f32C = fp32_to_float32(stC);
-    printf("%f + %f = %f\n", f32A, f32B, f32C);
+    printf("%f - %f = %f\n", f32A, f32B, f32C);
 
     EXPECT_FLOAT_EQ(f32A - f32B, f32C);
+}
+
+void test_mul()
+{
+    printf("test_mul\n");
+
+    float32_t f32A = 10000.0F;
+    float32_t f32B = 0.01256789F;
+
+    FP32_t stA = float32_to_fp32(f32A);
+    FP32_t stB = float32_to_fp32(f32B);
+    FP32_t stC = mul_fp32(stA, stB);
+    
+    float32_t f32C = fp32_to_float32(stC);
+    printf("%f * %f = %f\n", f32A, f32B, f32C);
+
+    EXPECT_FLOAT_EQ(f32A * f32B, f32C);
 }
 
 int main()
@@ -181,7 +232,10 @@ int main()
     test_add3();
     test_add4();
     test_add5();
+    test_add6();
+    test_add7();
     test_sub();
+    test_mul();
 
     return 0;
 }
