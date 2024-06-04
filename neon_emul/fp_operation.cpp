@@ -7,7 +7,7 @@ const uint32_t FP32_EXP_BIAS = 127U;
 
 namespace FPOP
 {
-    float32_t FP32_to_float32(const FP32_t& stFP32)
+    float32_t fp32_to_float32(const FP32_t& stFP32)
     {       
         float32_t f32Value = 1.0F;
 
@@ -38,7 +38,37 @@ namespace FPOP
         return f32Value;
     }
 
-    FP32_t float32_to_FP32(const float32_t f32Val)
+    bool IsNaN(const FP32_t& stFP32)
+    {
+        // NaN 0x7FFFFFFF
+        if((255U == stFP32.exp) && (0U != stFP32.fraction))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    bool IsInf(const FP32_t& stFP32)
+    {
+        if((255U == stFP32.exp) && (0U == stFP32.fraction))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    bool IsZero(const FP32_t& stFP32)
+    {
+        return true;
+    }
+    
+    FP32_t float32_to_fp32(const float32_t f32Val)
     {
         FP32_t stFP32;
         (void)memcpy(&stFP32, &f32Val, sizeof(f32Val));
@@ -46,29 +76,28 @@ namespace FPOP
         return stFP32;
     }
 
-    FP32_t add_FP32(const FP32_t a, const FP32_t b)
+    FP32_t add_fp32(const FP32_t stA, const FP32_t stB)
     {
-        const uint32_t u32SignA = a.sign;
-        const uint32_t u32SignB = b.sign;
+        const uint32_t u32SignA = stA.sign;
+        const uint32_t u32SignB = stB.sign;
 
-        uint32_t u32ExpA = a.exp;
-        uint32_t u32ExpB = b.exp;
+        uint32_t u32ExpA = stA.exp;
+        uint32_t u32ExpB = stB.exp;
         
         // Prepend implicit 1 to mantissas
         // (1 << 23U) = 0x800000
-        uint32_t u32SignificandA = (1U << 23U) + a.fraction;
-        uint32_t u32SignificandB = (1U << 23U) + b.fraction;
+        uint32_t u32SignificandA = (1U << 23U) + stA.fraction;
+        uint32_t u32SignificandB = (1U << 23U) + stB.fraction;
 
-        while(u32ExpA > u32ExpB)
+        if(u32ExpA > u32ExpB)
         {
-            u32ExpB ++;
-            u32SignificandB >>= 1U;
+            u32SignificandB >>= (u32ExpA - u32ExpB);
+            u32ExpB += (u32ExpA - u32ExpB);            
         }
-
-        while(u32ExpA < u32ExpB)
+        else if(u32ExpA < u32ExpB)
         {
-            u32ExpA ++;
-            u32SignificandA >>= 1U;
+            u32SignificandA >>= (u32ExpB - u32ExpA);
+            u32ExpA += (u32ExpB - u32ExpA);            
         }
 
         // Add
@@ -108,7 +137,6 @@ namespace FPOP
             s32NumSig--;
         }
 
-        // Normalize
         if(s32NumSig > FP32_FRACTION_BITS)
         {
             u32ExpC += (s32NumSig - FP32_FRACTION_BITS);
@@ -128,11 +156,25 @@ namespace FPOP
         return stResult;
     }
 
-    FP32_t sub_fp32(const FP32_t a, const FP32_t b)
+    FP32_t sub_fp32(const FP32_t stA, const FP32_t stB)
     {
-        FP32_t stResult;
+        FP32_t stNegB = stB;
+        if(0U == stNegB.sign)
+        {
+            stNegB.sign = 1U;
+        }
+        else
+        {
+            stNegB.sign = 0U;
+        }
+        const FP32_t stC = add_fp32(stA, stNegB);
 
-        return stResult;
+        return stC;
+    }
+
+    FP32_t mul_fp32(const FP32_t stA, const FP32_t stB)
+    {
+
     }
 }
 

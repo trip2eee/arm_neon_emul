@@ -12,11 +12,16 @@ namespace FPOP
         uint32_t sign:      1;
     };
 
-    float32_t FP32_to_float32(const FP32_t& stFP32);
-    FP32_t float32_to_FP32(const float32_t f32Val);
+    bool IsNaN(const FP32_t& stFP32);
+    bool IsInf(const FP32_t& stFP32);
+    bool IsZero(const FP32_t& stFP32);
+
+    float32_t fp32_to_float32(const FP32_t& stFP32);
+    FP32_t float32_to_fp32(const float32_t f32Val);
     
-    FP32_t add_FP32(const FP32_t a, const FP32_t b);
-    FP32_t sub_fp32(const FP32_t a, const FP32_t b);
+    FP32_t add_fp32(const FP32_t stA, const FP32_t stB);
+    FP32_t sub_fp32(const FP32_t stA, const FP32_t stB);
+    FP32_t mul_fp32(const FP32_t stA, const FP32_t stB);
 }
 
 #endif
