@@ -8,7 +8,8 @@
                 "-fdiagnostics-color=always",
                 "-g",
                 "${workspaceFolder}/unittests/ut_fp_operation.cpp",
-                "${workspaceFolder}/neon_emul/fp_operation.cpp",
+                "${workspaceFolder}/neon_emul/fp32_operation.cpp",
+                "${workspaceFolder}/neon_emul/fp16_operation.cpp",
                 "-o",
                 "${workspaceFolder}/ut_fp_operation.exe"
             ],

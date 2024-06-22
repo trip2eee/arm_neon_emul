@@ -5,12 +5,14 @@
 
 namespace FP16
 {
+    #pragma pack(push, 1)
     struct FP16_t
     {
-        uint32_t mantissa: 23;      // mantissa
-        uint32_t exp:       8;      // exponent
-        uint32_t sign:      1;      // sign
+        uint16_t mantissa: 10;      // mantissa
+        uint16_t exp:       5;      // exponent
+        uint16_t sign:      1;      // sign
     };
+    #pragma pack(pop)
 
     bool IsNaN(const FP16_t& stFP32);
     bool IsInf(const FP16_t& stFP32);
@@ -18,12 +20,12 @@ namespace FP16
     bool CheckOverflow(const uint32_t u32Exp);
     bool CheckUnderflow(const uint32_t u32Exp);
 
-    float32_t fp32_to_float32(const FP16_t& stFP32);
-    FP16_t float32_to_fp32(const float32_t f32Val);
+    float32_t to_float32(const FP16_t& stFP32);
+    FP16_t from_float32(const float32_t f32Val);
     
-    FP16_t add_fp32(const FP16_t stA, const FP16_t stB);
-    FP16_t sub_fp32(const FP16_t stA, const FP16_t stB);
-    FP16_t mul_fp32(const FP16_t stA, const FP16_t stB);
+    FP16_t add(const FP16_t stA, const FP16_t stB);
+    FP16_t sub(const FP16_t stA, const FP16_t stB);
+    FP16_t mul(const FP16_t stA, const FP16_t stB);
 }
 
 #endif

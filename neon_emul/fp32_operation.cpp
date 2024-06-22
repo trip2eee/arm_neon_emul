@@ -3,11 +3,11 @@
 #include <string.h>
 
 const uint32_t FP32_MANTISSA_BITS = 23U;
-const uint32_t FP32_EXP_BIAS = 127U;
+const uint32_t FP16_EXP_BIAS = 127U;
 
 namespace FP32
 {
-    float32_t fp32_to_float32(const FP32_t& stFP32)
+    float32_t to_float32(const FP32_t& stFP32)
     {       
         float32_t f32Value = 1.0F;
 
@@ -21,13 +21,13 @@ namespace FP32
             }
         }
 
-        if(stFP32.exp >= FP32_EXP_BIAS)
+        if(stFP32.exp >= FP16_EXP_BIAS)
         {
-            f32Value *= static_cast<float32_t>(1U << (stFP32.exp - FP32_EXP_BIAS));
+            f32Value *= static_cast<float32_t>(1U << (stFP32.exp - FP16_EXP_BIAS));
         }
         else
         {
-            f32Value /= static_cast<float32_t>(1U << (FP32_EXP_BIAS - stFP32.exp));
+            f32Value /= static_cast<float32_t>(1U << (FP16_EXP_BIAS - stFP32.exp));
         }
         
         if(stFP32.sign == 1)
@@ -41,7 +41,7 @@ namespace FP32
     bool IsNaN(const FP32_t& stFP32)
     {
         // NaN 0x7FFFFFFF
-        if((255U == stFP32.exp) && (0U != stFP32.mantissa))
+        if((0xFFU == stFP32.exp) && (0U != stFP32.mantissa))
         {
             return true;
         }
@@ -53,7 +53,7 @@ namespace FP32
 
     bool IsInf(const FP32_t& stFP32)
     {
-        if((255U == stFP32.exp) && (0U == stFP32.mantissa))
+        if((0xFFU == stFP32.exp) && (0U == stFP32.mantissa))
         {
             return true;
         }
@@ -92,7 +92,7 @@ namespace FP32
         }
     }
 
-    FP32_t float32_to_fp32(const float32_t f32Val)
+    FP32_t from_float32(const float32_t f32Val)
     {
         FP32_t stFP32;
         (void)memcpy(&stFP32, &f32Val, sizeof(f32Val));
@@ -112,7 +112,7 @@ namespace FP32
         uint32_t u32SignificandA = (1U << FP32_MANTISSA_BITS) + stA.mantissa;
         uint32_t u32SignificandB = (1U << FP32_MANTISSA_BITS) + stB.mantissa;
 
-        u32SignificandA <<= 7U;
+        u32SignificandA <<= 7U; // 7: 8(exponent bits) - 1
         u32SignificandB <<= 7U;
 
         if(u32ExpA > u32ExpB)
@@ -152,7 +152,7 @@ namespace FP32
         uint32_t u32ExpC = u32ExpA;
 
         // Normalize
-        int32_t s32NumSigBits = 31; // (24 + 7) bits
+        int32_t s32NumSigBits = 31; // (24 + 7) bits. (23-bit + 23-bit) <= 24-bit
         while((((u32SignificandC >> s32NumSigBits) & 0x01U) == 0U) && (s32NumSigBits > 0))
         {
             s32NumSigBits--;
@@ -187,6 +187,7 @@ namespace FP32
                 u32SignificandC += 1U;
             }
 
+            // (23-bit + 23-bit) <= 24-bit
             if((u32SignificandC >> 24U) > 0) {
                 u32ExpC --;
             }
@@ -197,12 +198,12 @@ namespace FP32
             u32SignificandC <<= (FP32_MANTISSA_BITS - s32NumSigBits);
         }
 
-        u32ExpC -= 7U;
+        u32ExpC -= 7U;  // 7: 8(exponent bits) - 1
 
         FP32_t stResult;
         stResult.sign = u32SignC;
         stResult.exp = u32ExpC;
-        stResult.mantissa = (u32SignificandC & 0x7FFFFF);// - (1U << 24U);
+        stResult.mantissa = (u32SignificandC & 0x7FFFFFU);// - (1U << 24U);
 
         return stResult;
     }
@@ -251,7 +252,7 @@ namespace FP32
         u32SignificandB <<= 8U;
 
         // (expC + bias) = (expA + bias) + (expC + bias) - bias
-        uint32_t u32ExpC = (u32ExpA + u32ExpB) - FP32_EXP_BIAS;
+        uint32_t u32ExpC = (u32ExpA + u32ExpB) - FP16_EXP_BIAS;
         uint64_t u64SignificandC = static_cast<uint64_t>(u32SignificandA) * static_cast<uint64_t>(u32SignificandB);
         // u64SignificandC >>= FP32_MANTISSA_BITS; // (24+7) + (24+8)
 
