@@ -2,6 +2,7 @@
 #include "unittest.h"
 #include "../neon_emul/fp32_operation.h"
 #include "../neon_emul/fp16_operation.h"
+#include <arm_neon.h>
 
 void test_conversion()
 {
@@ -12,7 +13,7 @@ void test_conversion()
     FP32::FP32_t stA = FP32::from_float32(f32A);
     FP32::FP32_t stB = FP32::from_float32(f32B);
 
-    printf("sizeof float32_t: %d\n", sizeof(stA));
+    printf("sizeof float32_t: %ld\n", sizeof(stA));
 
     float32_t a = FP32::to_float32(stA);
     printf("a = %f\n", a);
@@ -194,25 +195,27 @@ void test_conversion_fp16()
 {
     printf("test_conversion_fp16\n");
 
-    printf("test_conversion\n");
-    float32_t f32A = 10.25F;
-    float32_t f32B = -1.123047F;
+    // compute test input and expected output.
+    float32_t arf32A[4U] = {10.25F, -1.1234F, 1.1234F, 3.14F};
+    float32_t arf32B[4U];
+    float32x4_t vf32A = vld1q_f32(arf32A);
+    float16x4_t vf16A = vcvt_f16_f32(vf32A);
+    float32x4_t vf32B = vcvt_f32_f16(vf16A);
+    vst1q_f32(arf32B, vf32B);
 
-    FP16::FP16_t stA = FP16::from_float32(f32A);
-    FP16::FP16_t stB = FP16::from_float32(f32B);
+    FP16::FP16_t stA;
+    printf("sizeof float16_t: %ld\n", sizeof(stA));
+    printf("FP32,     NEON(FP16) EMUL(FP16)\n");
 
-    printf("sizeof float16_t: %d\n", sizeof(stA));
+    for(int i = 0; i < 4; i++)
+    {
+        stA = FP16::from_float32(arf32A[i]);
+        float32_t f32B = FP16::to_float32(stA);
 
-    float32_t a = FP16::to_float32(stA);
-    printf("a = %f\n", a);
-    EXPECT_FLOAT_EQ(f32A, a);
-
-    float32_t b = FP16::to_float32(stB);
-    printf("b = %f\n", b);
-    EXPECT_FLOAT_EQ(f32B, b);
-
+        printf("%f, %f, %f\n", arf32A[i], arf32B[i], f32B);
+        EXPECT_FLOAT_EQ(arf32B[i], f32B);
+    }
 }
-
 
 void test_IsNaN_fp16()
 {
