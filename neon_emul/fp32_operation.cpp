@@ -65,7 +65,14 @@ namespace FP32
 
     bool IsZero(const FP32_t& stFP32)
     {
-        return true;
+        if((0U == stFP32.exp) && (0U == stFP32.mantissa))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
     
     bool CheckOverflow(const uint32_t u32Exp)
@@ -148,63 +155,71 @@ namespace FP32
                 u32SignificandC = 0U;
             }
         }
-        
-        uint32_t u32ExpC = u32ExpA;
-
-        // Normalize
-        int32_t s32NumSigBits = 31; // (24 + 7) bits. (23-bit + 23-bit) <= 24-bit
-        while((((u32SignificandC >> s32NumSigBits) & 0x01U) == 0U) && (s32NumSigBits > 0))
-        {
-            s32NumSigBits--;
-        }
-
-        if(s32NumSigBits > FP32_MANTISSA_BITS)
-        {
-            u32ExpC += (s32NumSigBits - FP32_MANTISSA_BITS);
-
-            // Round
-            uint32_t u32Round;            
-            if((s32NumSigBits - FP32_MANTISSA_BITS) >= 2U) {
-                u32Round = (u32SignificandC >> (s32NumSigBits - FP32_MANTISSA_BITS - 2U)) & 0x01U;
-            } else {
-                u32Round = 0U;
-            }
-
-            uint32_t u32Guard;
-            if((s32NumSigBits - FP32_MANTISSA_BITS) >= 1U) {
-                u32Guard = (u32SignificandC >> (s32NumSigBits - FP32_MANTISSA_BITS - 1U)) & 0x01U;
-            } else {
-                u32Guard = 0U;
-            }
-
-            u32SignificandC >>= (s32NumSigBits - FP32_MANTISSA_BITS);
-
-            const uint32_t u32LSB = u32SignificandC & 0x01U;
-
-            if((1U == u32Round) && (1U == u32Guard)) {
-                u32SignificandC += 1U;
-            } else if((1U == u32Guard) && (1U == u32LSB)) {
-                u32SignificandC += 1U;
-            }
-
-            // (23-bit + 23-bit) <= 24-bit
-            if((u32SignificandC >> 24U) > 0) {
-                u32ExpC --;
-            }
-        }
-        else if(s32NumSigBits < FP32_MANTISSA_BITS)
-        {
-            u32ExpC -= (FP32_MANTISSA_BITS - s32NumSigBits);
-            u32SignificandC <<= (FP32_MANTISSA_BITS - s32NumSigBits);
-        }
-
-        u32ExpC -= 7U;  // 7: 8(exponent bits) - 1
 
         FP32_t stResult;
-        stResult.sign = u32SignC;
-        stResult.exp = u32ExpC;
-        stResult.mantissa = (u32SignificandC & 0x7FFFFFU);// - (1U << 24U);
+        if(0U == u32SignificandC)
+        {
+            stResult.exp = 0U;
+            stResult.mantissa = 0U;
+            stResult.sign = u32SignC;
+        }
+        else
+        { 
+            uint32_t u32ExpC = u32ExpA;
 
+            // Normalize
+            int32_t s32NumSigBits = 31; // (24 + 7) bits. (23-bit + 23-bit) <= 24-bit
+            while((((u32SignificandC >> s32NumSigBits) & 0x01U) == 0U) && (s32NumSigBits > 0))
+            {
+                s32NumSigBits--;
+            }
+
+            if(s32NumSigBits > FP32_MANTISSA_BITS)
+            {
+                u32ExpC += (s32NumSigBits - FP32_MANTISSA_BITS);
+
+                // Round
+                uint32_t u32Round;            
+                if((s32NumSigBits - FP32_MANTISSA_BITS) >= 2U) {
+                    u32Round = (u32SignificandC >> (s32NumSigBits - FP32_MANTISSA_BITS - 2U)) & 0x01U;
+                } else {
+                    u32Round = 0U;
+                }
+
+                uint32_t u32Guard;
+                if((s32NumSigBits - FP32_MANTISSA_BITS) >= 1U) {
+                    u32Guard = (u32SignificandC >> (s32NumSigBits - FP32_MANTISSA_BITS - 1U)) & 0x01U;
+                } else {
+                    u32Guard = 0U;
+                }
+
+                u32SignificandC >>= (s32NumSigBits - FP32_MANTISSA_BITS);
+
+                const uint32_t u32LSB = u32SignificandC & 0x01U;
+
+                if((1U == u32Round) && (1U == u32Guard)) {
+                    u32SignificandC += 1U;
+                } else if((1U == u32Guard) && (1U == u32LSB)) {
+                    u32SignificandC += 1U;
+                }
+
+                // (23-bit + 23-bit) <= 24-bit
+                if((u32SignificandC >> 24U) > 0) {
+                    u32ExpC --;
+                }
+            }
+            else if(s32NumSigBits < FP32_MANTISSA_BITS)
+            {
+                u32ExpC -= (FP32_MANTISSA_BITS - s32NumSigBits);
+                u32SignificandC <<= (FP32_MANTISSA_BITS - s32NumSigBits);
+            }
+
+            u32ExpC -= 7U;  // 7: 8(exponent bits) - 1
+
+            stResult.sign = u32SignC;
+            stResult.exp = u32ExpC;
+            stResult.mantissa = (u32SignificandC & 0x7FFFFFU);// - (1U << 24U);
+        }
         return stResult;
     }
 
@@ -226,8 +241,6 @@ namespace FP32
 
     FP32_t mul(const FP32_t stA, const FP32_t stB)
     {
-        FP32_t stC;
-
         const uint32_t u32SignA = stA.sign;
         const uint32_t u32SignB = stB.sign;
         uint32_t u32SignC;
@@ -240,88 +253,97 @@ namespace FP32
             u32SignC = 1U;
         }
 
-        uint32_t u32ExpA = stA.exp;
-        uint32_t u32ExpB = stB.exp;
-
-        // Prepend implicit 1 to mantissas
-        // (1 << 23U) = 0x800000
-        uint32_t u32SignificandA = (1U << FP32_MANTISSA_BITS) + stA.mantissa;
-        uint32_t u32SignificandB = (1U << FP32_MANTISSA_BITS) + stB.mantissa;
-        
-        u32SignificandA <<= 7U; // 7 + 8 = 15, 24 + 24 + 15 = 63
-        u32SignificandB <<= 8U;
-
-        // (expC + bias) = (expA + bias) + (expC + bias) - bias
-        uint32_t u32ExpC = (u32ExpA + u32ExpB) - FP16_EXP_BIAS;
-        uint64_t u64SignificandC = static_cast<uint64_t>(u32SignificandA) * static_cast<uint64_t>(u32SignificandB);
-        // u64SignificandC >>= FP32_MANTISSA_BITS; // (24+7) + (24+8)
-
-        // Normalize
-        int32_t s32NumSigBits = 63; // (24 + 24 + 15)
-        while((((u64SignificandC >> s32NumSigBits) & 0x01U) == 0U) && (s32NumSigBits > 0U))
-        {
-            s32NumSigBits--;
-        }
-
-        if(s32NumSigBits > FP32_MANTISSA_BITS)
-        {
-            u32ExpC += (s32NumSigBits - FP32_MANTISSA_BITS);
-
-            uint32_t u32Round;
-            if((s32NumSigBits - FP32_MANTISSA_BITS) >= 2U)
-            {
-                u32Round = (u64SignificandC >> (s32NumSigBits - FP32_MANTISSA_BITS - 2U)) & 0x01U;
-            }
-            else
-            {
-                u32Round = 0U;
-            }
-
-            uint32_t u32Guard;
-            if((s32NumSigBits - FP32_MANTISSA_BITS) >= 1U)
-            {
-                u32Guard = (u64SignificandC >> (s32NumSigBits - FP32_MANTISSA_BITS - 1U)) & 0x01U;
-            }
-            else
-            {
-                u32Guard = 0U;
-            }
-
-            u64SignificandC >>= (s32NumSigBits - FP32_MANTISSA_BITS);
-
-            const uint32_t u32LSB = u64SignificandC & 0x01U;
-
-            if(1U == u32Round && 1U == u32Guard)
-            {
-                u64SignificandC += 1U;
-            }
-            else if(0U == u32Round && 1U == u32Guard)
-            {
-                u64SignificandC += 1U;
-            }
-            else if(1U == u32Guard && 1U == u32LSB)
-            {
-                u64SignificandC += 1U;
-            }
-
-            if((u64SignificandC >> 24U) > 0)
-            {
-                u32ExpC --;
-            }
-        }
-        else if(s32NumSigBits < FP32_MANTISSA_BITS)
-        {
-            u32ExpC -= (FP32_MANTISSA_BITS - s32NumSigBits);
-            u64SignificandC <<= (FP32_MANTISSA_BITS - s32NumSigBits);
-        }
-
-        u32ExpC -= 15U;
-        u32ExpC -= FP32_MANTISSA_BITS;
-
         FP32_t stResult;
-        stResult.sign = u32SignC;
-        stResult.exp = u32ExpC;
-        stResult.mantissa = (u64SignificandC & 0x7FFFFF);// - (1U << 24U);
+        if(IsZero(stA) || IsZero(stB))
+        {
+            stResult.exp = 0U;
+            stResult.mantissa = 0U;
+            stResult.sign = u32SignC;
+        }
+        else
+        {        
+            uint32_t u32ExpA = stA.exp;
+            uint32_t u32ExpB = stB.exp;
+
+            // Prepend implicit 1 to mantissas
+            // (1 << 23U) = 0x800000
+            uint32_t u32SignificandA = (1U << FP32_MANTISSA_BITS) + stA.mantissa;
+            uint32_t u32SignificandB = (1U << FP32_MANTISSA_BITS) + stB.mantissa;
+            
+            u32SignificandA <<= 7U; // 7 + 8 = 15, 24 + 24 + 15 = 63
+            u32SignificandB <<= 8U;
+
+            // (expC + bias) = (expA + bias) + (expC + bias) - bias
+            uint32_t u32ExpC = (u32ExpA + u32ExpB) - FP16_EXP_BIAS;
+            uint64_t u64SignificandC = static_cast<uint64_t>(u32SignificandA) * static_cast<uint64_t>(u32SignificandB);
+            // u64SignificandC >>= FP32_MANTISSA_BITS; // (24+7) + (24+8)
+              
+            // Normalize
+            int32_t s32NumSigBits = 63; // (24 + 24 + 15)
+            while((((u64SignificandC >> s32NumSigBits) & 0x01U) == 0U) && (s32NumSigBits > 0U))
+            {
+                s32NumSigBits--;
+            }
+
+            if(s32NumSigBits > FP32_MANTISSA_BITS)
+            {
+                u32ExpC += (s32NumSigBits - FP32_MANTISSA_BITS);
+
+                uint32_t u32Round;
+                if((s32NumSigBits - FP32_MANTISSA_BITS) >= 2U)
+                {
+                    u32Round = (u64SignificandC >> (s32NumSigBits - FP32_MANTISSA_BITS - 2U)) & 0x01U;
+                }
+                else
+                {
+                    u32Round = 0U;
+                }
+
+                uint32_t u32Guard;
+                if((s32NumSigBits - FP32_MANTISSA_BITS) >= 1U)
+                {
+                    u32Guard = (u64SignificandC >> (s32NumSigBits - FP32_MANTISSA_BITS - 1U)) & 0x01U;
+                }
+                else
+                {
+                    u32Guard = 0U;
+                }
+
+                u64SignificandC >>= (s32NumSigBits - FP32_MANTISSA_BITS);
+
+                const uint32_t u32LSB = u64SignificandC & 0x01U;
+
+                if(1U == u32Round && 1U == u32Guard)
+                {
+                    u64SignificandC += 1U;
+                }
+                else if(0U == u32Round && 1U == u32Guard)
+                {
+                    u64SignificandC += 1U;
+                }
+                else if(1U == u32Guard && 1U == u32LSB)
+                {
+                    u64SignificandC += 1U;
+                }
+
+                if((u64SignificandC >> 24U) > 0)
+                {
+                    u32ExpC --;
+                }
+            }
+            else if(s32NumSigBits < FP32_MANTISSA_BITS)
+            {
+                u32ExpC -= (FP32_MANTISSA_BITS - s32NumSigBits);
+                u64SignificandC <<= (FP32_MANTISSA_BITS - s32NumSigBits);
+            }
+
+            u32ExpC -= 15U;
+            u32ExpC -= FP32_MANTISSA_BITS;
+
+            stResult.sign = u32SignC;
+            stResult.exp = u32ExpC;
+            stResult.mantissa = (u64SignificandC & 0x7FFFFF);// - (1U << 24U);
+        }
 
         return stResult;
     }

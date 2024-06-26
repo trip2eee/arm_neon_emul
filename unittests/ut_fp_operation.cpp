@@ -13,14 +13,14 @@ void test_conversion()
     FP32::FP32_t stA = FP32::from_float32(f32A);
     FP32::FP32_t stB = FP32::from_float32(f32B);
 
-    printf("sizeof float32_t: %ld\n", sizeof(stA));
+    printf("    sizeof float32_t: %ld\n", sizeof(stA));
 
     float32_t a = FP32::to_float32(stA);
-    printf("a = %f\n", a);
+    printf("    a = %f\n", a);
     EXPECT_FLOAT_EQ(f32A, a);
 
     float32_t b = FP32::to_float32(stB);
-    printf("b = %f\n", b);
+    printf("    b = %f\n", b);
     EXPECT_FLOAT_EQ(f32B, b);
 }
 
@@ -53,7 +53,7 @@ void test_add1()
     FP32::FP32_t stC = FP32::add(stA, stB);
     
     float32_t f32C = FP32::to_float32(stC);
-    printf("%f + %f = %f\n", f32A, f32B, f32C);
+    printf("    %f + %f = %f\n", f32A, f32B, f32C);
 
     EXPECT_FLOAT_EQ(f32A + f32B, f32C);
 }
@@ -69,7 +69,7 @@ void test_add2()
     FP32::FP32_t stC = FP32::add(stA, stB);
     
     float32_t f32C = to_float32(stC);
-    printf("%f + %f = %f\n", f32A, f32B, f32C);
+    printf("    %f + %f = %f\n", f32A, f32B, f32C);
 
     EXPECT_FLOAT_EQ(f32A + f32B, f32C);
 }
@@ -85,7 +85,7 @@ void test_add3()
     FP32::FP32_t stC = FP32::add(stA, stB);
     
     float32_t f32C = FP32::to_float32(stC);
-    printf("%f + %f = %f\n", f32A, f32B, f32C);
+    printf("    %f + %f = %f\n", f32A, f32B, f32C);
 
     EXPECT_FLOAT_EQ(f32A + f32B, f32C);
 }
@@ -101,7 +101,7 @@ void test_add4()
     FP32::FP32_t stC = FP32::add(stA, stB);
     
     float32_t f32C = FP32::to_float32(stC);
-    printf("%f + %f = %f\n", f32A, f32B, f32C);
+    printf("    %f + %f = %f\n", f32A, f32B, f32C);
 
     EXPECT_FLOAT_EQ(f32A + f32B, f32C);
 }
@@ -117,7 +117,7 @@ void test_add5()
     FP32::FP32_t stC = FP32::add(stA, stB);
     
     float32_t f32C = FP32::to_float32(stC);
-    printf("%f + %f = %f\n", f32A, f32B, f32C);
+    printf("    %f + %f = %f\n", f32A, f32B, f32C);
 
     EXPECT_FLOAT_EQ(f32A + f32B, f32C);
 }
@@ -134,7 +134,7 @@ void test_add6()
     FP32::FP32_t stC = FP32::add(stA, stB);
     
     float32_t f32C = FP32::to_float32(stC);
-    printf("%f + %f = %f\n", f32A, f32B, f32C);
+    printf("    %f + %f = %f\n", f32A, f32B, f32C);
 
     EXPECT_FLOAT_EQ(f32A + f32B, f32C);
 }
@@ -150,7 +150,7 @@ void test_add7()
     FP32::FP32_t stC = FP32::add(stA, stB);
     
     float32_t f32C = FP32::to_float32(stC);
-    printf("%f + %f = %f\n", f32A, f32B, f32C);
+    printf("    %f + %f = %f\n", f32A, f32B, f32C);
 
     EXPECT_FLOAT_EQ(f32A + f32B, f32C);
 }
@@ -159,7 +159,7 @@ void test_add7()
 void test_sub()
 {
     printf("test_sub\n");
-    float32_t f32A = 10.0F;
+    float32_t f32A = 5.0F;
     float32_t f32B = 5.0F;
 
     FP32::FP32_t stA = FP32::from_float32(f32A);
@@ -167,17 +167,15 @@ void test_sub()
     FP32::FP32_t stC = FP32::sub(stA, stB);
     
     float32_t f32C = FP32::to_float32(stC);
-    printf("%f - %f = %f\n", f32A, f32B, f32C);
+    printf("    %f - %f = %f\n", f32A, f32B, f32C);
 
     EXPECT_FLOAT_EQ(f32A - f32B, f32C);
 }
 
-void test_mul()
+void test_mul1()
 {
-    printf("test_mul\n");
-
+    printf("test_mul1\n");
     float32_t f32A = 10000.1234F;
-    // float32_t f32B = 0.01256789F;
     float32_t f32B = 0.01256789F;
 
     FP32::FP32_t stA = FP32::from_float32(f32A);
@@ -186,10 +184,28 @@ void test_mul()
     FP32::FP32_t stC = FP32::mul(stA, stB);
 
     float32_t f32C = FP32::to_float32(stC);
-    printf("%f * %f = %f\n", f32A, f32B, f32C);
+    printf("    %f * %f = %f\n", f32A, f32B, f32C);
 
     EXPECT_FLOAT_EQ(f32A * f32B, f32C);
 }
+
+void test_mul2()
+{
+    printf("test_mul2\n");
+    float32_t f32A = -0.0F;
+    float32_t f32B = 0.01256789F;
+
+    FP32::FP32_t stA = FP32::from_float32(f32A);
+    FP32::FP32_t stB = FP32::from_float32(f32B);
+
+    FP32::FP32_t stC = FP32::mul(stA, stB);
+
+    float32_t f32C = FP32::to_float32(stC);
+    printf("    %f * %f = %f\n", f32A, f32B, f32C);
+
+    EXPECT_FLOAT_EQ(f32A * f32B, f32C);
+}
+
 
 void test_conversion_fp16()
 {
@@ -204,15 +220,15 @@ void test_conversion_fp16()
     vst1q_f32(arf32B, vf32B);
 
     FP16::FP16_t stA;
-    printf("sizeof float16_t: %ld\n", sizeof(stA));
-    printf("FP32,     NEON(FP16) EMUL(FP16)\n");
+    printf("    sizeof float16_t: %ld\n", sizeof(stA));
+    printf("    FP32,     NEON(FP16) EMUL(FP16)\n");
 
     for(int i = 0; i < 4; i++)
     {
         stA = FP16::from_float32(arf32A[i]);
         float32_t f32B = FP16::to_float32(stA);
 
-        printf("%f, %f, %f\n", arf32A[i], arf32B[i], f32B);
+        printf("    %f, %f, %f\n", arf32A[i], arf32B[i], f32B);
         EXPECT_FLOAT_EQ(arf32B[i], f32B);
     }
 }
@@ -235,76 +251,111 @@ void test_IsInf_fp16()
     EXPECT_EQ(FP16::IsInf(stA), true);
 }
 
+void test_IsZero_fp16()
+{
+    printf("test_IsZero_fp16\n");
+
+    float32_t f32A = 0.0F;
+    FP16::FP16_t stA = FP16::from_float32(f32A);
+    EXPECT_EQ(FP16::IsZero(stA), true);
+}
+
 void test_add1_fp16()
 {
     printf("test_add1_fp16\n");
 
-    float32_t f32A = 1000.5F;
-    float32_t f32B = 2.5F;
+    float32_t arf32A[4U] = {10.25F, -1.1234F, 1.1234F, 3.14F};
+    float32_t arf32B[4U] = {-10.25F, 2.5F, 1000.0F, 13.14F};
+    float32_t arf32C[4U];
 
-    FP16::FP16_t stA = FP16::from_float32(f32A);
-    FP16::FP16_t stB = FP16::from_float32(f32B);
-    FP16::FP16_t stC = FP16::add(stA, stB);
+    float32x4_t vf32A = vld1q_f32(arf32A);
+    float32x4_t vf32B = vld1q_f32(arf32B);
+
+    float16x4_t vf16A = vcvt_f16_f32(vf32A);
+    float16x4_t vf16B = vcvt_f16_f32(vf32B);
+    float16x4_t vf16C = vadd_f16(vf16A, vf16B);
+
+    float32x4_t vf32C = vcvt_f32_f16(vf16C);
+    vst1q_f32(arf32C, vf32C);
     
-    float32_t f32C = FP16::to_float32(stC);
-    printf("%f + %f = %f\n", f32A, f32B, f32C);
+    for(int i = 0; i < 4; i++)
+    {
+        FP16::FP16_t stA = FP16::from_float32(arf32A[i]);
+        FP16::FP16_t stB = FP16::from_float32(arf32B[i]);
+        FP16::FP16_t stC = FP16::add(stA, stB);
+        float32_t f32C = FP16::to_float32(stC);
 
-    EXPECT_FLOAT_EQ(f32A + f32B, f32C);
-}
+        printf("    %f + %f = %f, %f\n", arf32A[i], arf32B[i], arf32C[i], f32C);
 
-void test_add2_fp16()
-{
-    printf("test_add2_fp16\n");
-    float32_t f32A = 1.0F;
-    float32_t f32B = 0.75F;
-
-    FP16::FP16_t stA = FP16::from_float32(f32A);
-    FP16::FP16_t stB = FP16::from_float32(f32B);
-    FP16::FP16_t stC = FP16::add(stA, stB);
-    
-    float32_t f32C = FP16::to_float32(stC);
-    printf("%f + %f = %f\n", f32A, f32B, f32C);
-
-    EXPECT_FLOAT_EQ(f32A + f32B, f32C);
+        EXPECT_FLOAT_EQ(arf32C[i], f32C);
+    }
 }
 
 void test_sub_fp16()
 {
     printf("test_sub_fp16\n");
-    float32_t f32A = 10.0F;
-    float32_t f32B = 5.0F;
-
-    FP16::FP16_t stA = FP16::from_float32(f32A);
-    FP16::FP16_t stB = FP16::from_float32(f32B);
-    FP16::FP16_t stC = FP16::sub(stA, stB);
     
-    float32_t f32C = FP16::to_float32(stC);
-    printf("%f - %f = %f\n", f32A, f32B, f32C);
+    float32_t arf32A[4U] = {10.25F, -1.1234F, 1.1234F, 3.14F};
+    float32_t arf32B[4U] = {-10.25F, 2.5F, 1000.0F, 13.141592F};
+    float32_t arf32C[4U];
 
-    EXPECT_FLOAT_EQ(f32A - f32B, f32C);
+    float32x4_t vf32A = vld1q_f32(arf32A);
+    float32x4_t vf32B = vld1q_f32(arf32B);
+
+    float16x4_t vf16A = vcvt_f16_f32(vf32A);
+    float16x4_t vf16B = vcvt_f16_f32(vf32B);
+    float16x4_t vf16C = vsub_f16(vf16A, vf16B);
+
+    float32x4_t vf32C = vcvt_f32_f16(vf16C);
+    vst1q_f32(arf32C, vf32C);
+    
+    for(int i = 0; i < 4; i++)
+    {
+        FP16::FP16_t stA = FP16::from_float32(arf32A[i]);
+        FP16::FP16_t stB = FP16::from_float32(arf32B[i]);
+        FP16::FP16_t stC = FP16::sub(stA, stB);
+        float32_t f32C = FP16::to_float32(stC);
+
+        printf("    %f - %f = %f, %f\n", arf32A[i], arf32B[i], arf32C[i], f32C);
+
+        EXPECT_FLOAT_EQ(arf32C[i], f32C);
+    }
 }
 
 void test_mul_fp16()
 {
     printf("test_mul_fp16\n");
 
-    float32_t f32A = 0.125F;
-    float32_t f32B = 10.0F;
+    float32_t arf32A[4U] = {0.0F, -1.1234F, 1.1234F, 3.14F};
+    float32_t arf32B[4U] = {10.25F, 0.0F, 1000.0F, 13.14F};
+    float32_t arf32C[4U];
 
-    FP16::FP16_t stA = FP16::from_float32(f32A);
-    FP16::FP16_t stB = FP16::from_float32(f32B);
+    float32x4_t vf32A = vld1q_f32(arf32A);
+    float32x4_t vf32B = vld1q_f32(arf32B);
 
-    FP16::FP16_t stC = FP16::mul(stA, stB);
+    float16x4_t vf16A = vcvt_f16_f32(vf32A);
+    float16x4_t vf16B = vcvt_f16_f32(vf32B);
+    float16x4_t vf16C = vmul_f16(vf16A, vf16B);
 
-    float32_t f32C = FP16::to_float32(stC);
-    printf("%f * %f = %f\n", f32A, f32B, f32C);
+    float32x4_t vf32C = vcvt_f32_f16(vf16C);
+    vst1q_f32(arf32C, vf32C);
+    
+    for(int i = 0; i < 4; i++)
+    {
+        FP16::FP16_t stA = FP16::from_float32(arf32A[i]);
+        FP16::FP16_t stB = FP16::from_float32(arf32B[i]);
+        FP16::FP16_t stC = FP16::mul(stA, stB);
+        float32_t f32C = FP16::to_float32(stC);
 
-    EXPECT_FLOAT_EQ(f32A * f32B, f32C);
+        printf("    %f * %f = %f, %f\n", arf32A[i], arf32B[i], arf32C[i], f32C);
+
+        EXPECT_FLOAT_EQ(arf32C[i], f32C);
+    }
 }
 
 int main()
 {
-    printf("fp operation\n");
+    printf("FP operation\n");
 
     test_conversion();
     test_IsNaN();
@@ -317,13 +368,14 @@ int main()
     test_add6();
     test_add7();
     test_sub();
-    test_mul();
+    test_mul1();
+    test_mul2();
 
     test_conversion_fp16();
     test_IsNaN_fp16();
     test_IsInf_fp16();
+    test_IsZero_fp16();
     test_add1_fp16();
-    test_add2_fp16();
     test_sub_fp16();
     test_mul_fp16();
 

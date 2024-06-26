@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 
 project(neon_emul CXX)
 
-set(COMPILE_FLAGS -"g3")
+set(CMAKE_CXX_FLAGS "-g -march=armv8.2-a+fp16")
 
 add_executable(ut_fp_operation
     unittests/ut_fp_operation.cpp
