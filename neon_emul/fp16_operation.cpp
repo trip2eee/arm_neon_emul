@@ -387,6 +387,12 @@ namespace FP16
         
         return stResult;
     }
+
+    FP16_t mla(const FP16_t stA, const FP16_t stB, const FP16_t stC)
+    {
+        // a + (b * c)
+        return add(stA, mul(stB, stC));
+    }
 }
 
 

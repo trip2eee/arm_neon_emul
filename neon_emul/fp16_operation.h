@@ -26,6 +26,15 @@ namespace FP16
     FP16_t add(const FP16_t stA, const FP16_t stB);
     FP16_t sub(const FP16_t stA, const FP16_t stB);
     FP16_t mul(const FP16_t stA, const FP16_t stB);
+
+    /**
+     * @brief This function computes a + (b * c)
+     * @param stA [in] operand a
+     * @param stB [in] operand b
+     * @param stC [in] operand c
+     * @return a + (b * c)
+    */
+    FP16_t mla(const FP16_t stA, const FP16_t stB, const FP16_t stC);
 }
 
 #endif
