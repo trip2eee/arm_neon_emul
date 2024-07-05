@@ -127,7 +127,7 @@ void test_add6()
 {
     printf("test_add6\n");
     float32_t f32A = 3.14159265F;
-    float32_t f32B = 1000.0F;
+    float32_t f32B = 3000000.0F;
 
     FP32::FP32_t stA = FP32::from_float32(f32A);
     FP32::FP32_t stB = FP32::from_float32(f32B);
@@ -357,9 +357,9 @@ void test_mul_add_fp16()
 {
     printf("test_mul_add_fp16\n");
 
-    float32_t arf32A[4U] = {0.0F, -1.1234F, 1.1234F, 3.14159265F};
+    float32_t arf32A[4U] = {0.0F, -1.1234F, 1.4321F, 3.14159265F};
     float32_t arf32B[4U] = {10.25F, 0.0F, 1000.0F, 13.145F};
-    float32_t arf32C[4U] = {1.0F, 2.0F, 3.0F, 4.0F};
+    float32_t arf32C[4U] = {1.0F, 2.0F, -3.12F, 4.0F};
     float32_t arf32D[4U];
 
     float32x4_t vf32A = vld1q_f32(arf32A);
@@ -379,8 +379,8 @@ void test_mul_add_fp16()
         FP16::FP16_t stA = FP16::from_float32(arf32A[i]);
         FP16::FP16_t stB = FP16::from_float32(arf32B[i]);
         FP16::FP16_t stC = FP16::from_float32(arf32C[i]);
-        FP16::FP16_t stD = FP16::mla(stA, stB, stC);
 
+        FP16::FP16_t stD = FP16::mla(stA, stB, stC);
         float32_t f32D = FP16::to_float32(stD);
 
         printf("    %f + (%f * %f) = %f, %f\n", arf32A[i], arf32B[i], arf32C[i], arf32D[i], f32D);

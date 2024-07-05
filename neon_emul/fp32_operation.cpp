@@ -199,6 +199,8 @@ namespace FP32
 
                 if((1U == u32Round) && (1U == u32Guard)) {
                     u32SignificandC += 1U;
+                } else if((0U == u32Round) && (1U == u32Guard)) {
+                    u32SignificandC += 1U;
                 } else if((1U == u32Guard) && (1U == u32LSB)) {
                     u32SignificandC += 1U;
                 }
